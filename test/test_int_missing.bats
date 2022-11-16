@@ -2,8 +2,8 @@ load ../node_modules/bats-support/load
 load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
-@test "'-i|--int-arg:int' -- -i" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+@test "-i|--int-arg:int -- -i" {
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -11,8 +11,8 @@ load ./lib/utils.bash
   assert_line 'declare -A arg_errors=([int-arg]="Missing value for argument --int-arg" )'
 }
 
-@test "'-i|--int-arg:int' -- --int-arg" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+@test "-i|--int-arg:int -- --int-arg" {
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -21,7 +21,7 @@ load ./lib/utils.bash
 }
 
 @test "-i:int -- -i" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -30,7 +30,7 @@ load ./lib/utils.bash
 }
 
 @test "--int-arg:int -- --int-arg" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'

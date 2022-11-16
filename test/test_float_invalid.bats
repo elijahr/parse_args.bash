@@ -2,8 +2,8 @@ load ../node_modules/bats-support/load
 load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
-@test "'-f|--float-arg:float' -- -f=bogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+@test "-f|--float-arg:float -- -f=bogus" {
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -11,8 +11,8 @@ load ./lib/utils.bash
   assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "'-f|--float-arg:float' -- -f:bogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+@test "-f|--float-arg:float -- -f:bogus" {
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -20,8 +20,8 @@ load ./lib/utils.bash
   assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "'-f|--float-arg:float' -- -f bogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+@test "-f|--float-arg:float -- -f bogus" {
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -29,8 +29,8 @@ load ./lib/utils.bash
   assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "'-f|--float-arg:float' -- -fbogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+@test "-f|--float-arg:float -- -fbogus" {
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -38,8 +38,8 @@ load ./lib/utils.bash
   assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "'-f|--float-arg:float' -- --float-arg=bogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+@test "-f|--float-arg:float -- --float-arg=bogus" {
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -47,8 +47,8 @@ load ./lib/utils.bash
   assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "'-f|--float-arg:float' -- --float-arg:bogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+@test "-f|--float-arg:float -- --float-arg:bogus" {
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -56,8 +56,8 @@ load ./lib/utils.bash
   assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "'-f|--float-arg:float' -- --float-arg bogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+@test "-f|--float-arg:float -- --float-arg bogus" {
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -66,7 +66,7 @@ load ./lib/utils.bash
 }
 
 @test "-f:float -- -f=bogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -75,7 +75,7 @@ load ./lib/utils.bash
 }
 
 @test "-f:float -- -f:bogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -84,7 +84,7 @@ load ./lib/utils.bash
 }
 
 @test "-f:float -- -f bogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -93,7 +93,7 @@ load ./lib/utils.bash
 }
 
 @test "-f:float -- -fbogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -102,7 +102,7 @@ load ./lib/utils.bash
 }
 
 @test "--float-arg:float -- --float-arg=bogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -111,7 +111,7 @@ load ./lib/utils.bash
 }
 
 @test "--float-arg:float -- --float-arg:bogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -120,7 +120,7 @@ load ./lib/utils.bash
 }
 
 @test "--float-arg:float -- --float-arg bogus" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'

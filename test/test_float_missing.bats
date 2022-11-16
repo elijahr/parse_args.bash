@@ -2,8 +2,8 @@ load ../node_modules/bats-support/load
 load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
-@test "'-f|--float-arg:float' -- -f" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+@test "-f|--float-arg:float -- -f" {
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -11,8 +11,8 @@ load ./lib/utils.bash
   assert_line 'declare -A arg_errors=([float-arg]="Missing value for argument --float-arg" )'
 }
 
-@test "'-f|--float-arg:float' -- --float-arg" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+@test "-f|--float-arg:float -- --float-arg" {
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -21,7 +21,7 @@ load ./lib/utils.bash
 }
 
 @test "-f:float -- -f" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -30,7 +30,7 @@ load ./lib/utils.bash
 }
 
 @test "--float-arg:float -- --float-arg" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'

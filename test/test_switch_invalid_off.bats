@@ -3,7 +3,7 @@ load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
 @test "-1:switch:off -- -1=value" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -12,7 +12,7 @@ load ./lib/utils.bash
 }
 
 @test "-1:switch:off -- -1:value" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -21,7 +21,7 @@ load ./lib/utils.bash
 }
 
 @test "-1:switch:off -- -1value" {
-  eval test_args=($BATS_TEST_DESCRIPTION)
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
