@@ -29,6 +29,7 @@ _pa_validate_value() {
   float) [[ $value =~ ^-?[0-9]+(\.[0-9]+)?$ ]] || return 1 ;;
   bool) [[ $value =~ ^(true)|(false)$ ]] || return 1 ;;
   switch) [[ $value =~ ^(on|off)$ ]] || return 1 ;;
+  regex\(\)) return 0 ;; # special case for empty regex, matches everything
   regex*)
     if [[ $type =~ (regex\((.*)\)) ]]; then
       [[ $value =~ ${BASH_REMATCH[2]} ]] || return 1
@@ -41,7 +42,7 @@ _pa_validate_value() {
 
 # Parse argdefs from the input args
 _pa_parse_argdefs() {
-  local argdef parts short long name type default min_args max_args pos
+  local argdef parts tail_parts short long name type default min_args max_args pos
   while [[ $# -gt 0 ]]; do
     argdef=$1
     shift
@@ -50,7 +51,18 @@ _pa_parse_argdefs() {
       break
     fi
     declare -a parts=()
-    IFS=":" read -ra parts <<<"$argdef"
+
+    # check for special case of regex containing colon
+    if [[ $argdef =~ ^([^:]+):(regex\(.*\))$ ]]; then
+      parts=("${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}")
+    elif [[ $argdef =~ ^([^:]+):(regex\(.*\)):(.*) ]]; then
+      parts=("${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}")
+      IFS=':' read -ra tail_parts <<<"${BASH_REMATCH[3]}"
+      parts+=("${tail_parts[@]}")
+    else
+      IFS=':' read -ra parts <<<"$argdef"
+    fi
+
     if [ ${#parts[@]} -eq 0 ]; then
       # shellcheck disable=SC2034
       argdef_errors[$argdef]="Empty argument definition"
@@ -315,20 +327,20 @@ _pa_parse_args() {
     min_args=${min_args_by_name[$name]}
     max_args=${max_args_by_name[$name]}
 
-    if [ "$value" = "" ] && [ "$max_args" -eq 1 ]; then
-      # if no value given and max-args is 1 then error
+    # if [ "$value" = "" ] && [ "$max_args" -eq 1 ]; then
+    #   # if no value given and max-args is 1 then error
 
-      # shellcheck disable=SC2034
-      if [ -n "$long" ]; then
-        arg_errors[$name]="Missing value for argument --${long}"
-      elif [ -n "$short" ]; then
-        arg_errors[$name]="Missing value for argument -${short}"
-      else
-        arg_errors[$name]="Missing value for argument ${pos}"
-      fi
-      shift
-      continue
-    elif ! _pa_validate_value "$type" "$value"; then
+    #   # shellcheck disable=SC2034
+    #   if [ -n "$long" ]; then
+    #     arg_errors[$name]="Missing value for argument --${long}"
+    #   elif [ -n "$short" ]; then
+    #     arg_errors[$name]="Missing value for argument -${short}"
+    #   else
+    #     arg_errors[$name]="Missing value for argument ${pos}"
+    #   fi
+    #   shift
+    #   continue
+    if ! _pa_validate_value "$type" "$value"; then
       # validate the value against the specified type
 
       # shellcheck disable=SC2034

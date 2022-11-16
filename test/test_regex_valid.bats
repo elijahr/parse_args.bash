@@ -100,3 +100,12 @@ load ./lib/utils.bash
   assert_line 'declare -A argdef_errors=()'
   assert_line 'declare -A arg_errors=()'
 }
+
+@test "-r:regex() -- -r=" {
+  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  run_parse_args "${test_args[@]}"
+  assert_success
+  assert_line 'declare -A args=([r]="" )'
+  assert_line 'declare -A argdef_errors=()'
+  assert_line 'declare -A arg_errors=()'
+}
