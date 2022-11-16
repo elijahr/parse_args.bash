@@ -24,19 +24,19 @@ _pa_validate_value() {
   type="$1"
   value="$2"
   case $type in
-  int) [[ $value =~ ^-?[0-9]+$ ]] || return 1 ;;
-  uint) [[ $value =~ ^[0-9]+$ ]] || return 1 ;;
-  float) [[ $value =~ ^-?[0-9]+(\.[0-9]+)?$ ]] || return 1 ;;
-  bool) [[ $value =~ ^(true)|(false)$ ]] || return 1 ;;
-  switch) [[ $value =~ ^(on|off)$ ]] || return 1 ;;
-  regex\(\)) return 0 ;; # special case for empty regex, matches everything
-  regex*)
-    if [[ $type =~ (regex\((.*)\)) ]]; then
-      [[ $value =~ ${BASH_REMATCH[2]} ]] || return 1
-    else
-      return 1
-    fi
-    ;;
+    int) [[ $value =~ ^-?[0-9]+$ ]] || return 1 ;;
+    uint) [[ $value =~ ^[0-9]+$ ]] || return 1 ;;
+    float) [[ $value =~ ^-?[0-9]+(\.[0-9]+)?$ ]] || return 1 ;;
+    bool) [[ $value =~ ^(true)|(false)$ ]] || return 1 ;;
+    switch) [[ $value =~ ^(on|off)$ ]] || return 1 ;;
+    regex\(\)) return 0 ;; # special case for empty regex, matches everything
+    regex*)
+      if [[ $type =~ (regex\((.*)\)) ]]; then
+        [[ $value =~ ${BASH_REMATCH[2]} ]] || return 1
+      else
+        return 1
+      fi
+      ;;
   esac
 }
 
@@ -106,7 +106,7 @@ _pa_parse_argdefs() {
     type=${parts[1]:-string}
 
     case $type in
-      string|int|uint|float|bool|switch) ;;
+      string | int | uint | float | bool | switch) ;;
       regex\(*\)) ;;
       *)
         # shellcheck disable=SC2034
@@ -387,7 +387,7 @@ _pa_parse_args() {
 _pa_cleanup() {
   eval "${_pa_original_bashopts}"
   unset _pa_original_bashopts default_by_name long_by_short min_args_by_name \
-        max_args_by_name count_by_name pos_order type_by_name
+    max_args_by_name count_by_name pos_order type_by_name
   unset -f _pa_validate_value _pa_parse_argdefs _pa_parse_args _pa_cleanup
 }
 

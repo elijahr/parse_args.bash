@@ -3,7 +3,7 @@ load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
 @test "-1|--switch-arg:switch -- -1" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([switch-arg]="on" )'
@@ -12,7 +12,7 @@ load ./lib/utils.bash
 }
 
 @test "-1|--switch-arg:switch -- --switch-arg" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([switch-arg]="on" )'
@@ -21,7 +21,7 @@ load ./lib/utils.bash
 }
 
 @test "-1:switch -- -1" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([1]="on" )'
@@ -30,7 +30,7 @@ load ./lib/utils.bash
 }
 
 @test "--switch-arg:switch -- --switch-arg" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([switch-arg]="on" )'
@@ -39,7 +39,7 @@ load ./lib/utils.bash
 }
 
 @test "-1|--switch-arg:switch:on -- -1" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([switch-arg]="off" )'
@@ -48,7 +48,7 @@ load ./lib/utils.bash
 }
 
 @test "-1|--switch-arg:switch:on -- --switch-arg" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([switch-arg]="off" )'
@@ -57,7 +57,7 @@ load ./lib/utils.bash
 }
 
 @test "-1:switch:on -- -1" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([1]="off" )'
@@ -66,7 +66,7 @@ load ./lib/utils.bash
 }
 
 @test "--switch-arg:switch:on -- --switch-arg" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([switch-arg]="off" )'

@@ -5,7 +5,7 @@ load ./lib/utils.bash
 # colon inside of regex should be allowed
 
 @test "-r:regex(^a:b$) -- -r a:b" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([r]="a:b" )'
@@ -14,7 +14,7 @@ load ./lib/utils.bash
 }
 
 @test "-r:regex(^a:b$) -- -r aa:bb" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -23,7 +23,7 @@ load ./lib/utils.bash
 }
 
 @test "-r:regex(^a:b) -- -r a:bc" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([r]="a:bc" )'
@@ -32,7 +32,7 @@ load ./lib/utils.bash
 }
 
 @test "-r:regex(a:b$) -- -r aa:b" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([r]="aa:b" )'
@@ -41,7 +41,7 @@ load ./lib/utils.bash
 }
 
 @test "-r:regex(a:b) -- -r a:b" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([r]="a:b" )'
@@ -50,7 +50,7 @@ load ./lib/utils.bash
 }
 
 @test "-r:regex(a:b) -- -r aa:bb" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([r]="aa:bb" )'

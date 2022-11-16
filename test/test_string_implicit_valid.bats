@@ -3,7 +3,7 @@ load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
 @test "-s|--string-arg -- -s:actual-value" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([string-arg]="actual-value" )'
@@ -12,7 +12,7 @@ load ./lib/utils.bash
 }
 
 @test "-s|--string-arg -- --string-arg:actual-value" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([string-arg]="actual-value" )'
@@ -21,7 +21,7 @@ load ./lib/utils.bash
 }
 
 @test "-s -- -s:actual-value" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([s]="actual-value" )'
@@ -30,7 +30,7 @@ load ./lib/utils.bash
 }
 
 @test "--string-arg -- --string-arg:actual-value" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([string-arg]="actual-value" )'

@@ -3,7 +3,7 @@ load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
 @test "-r|--regex-arg:regex(a+b+c+):aabbbcccc" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([regex-arg]="aabbbcccc" )'
@@ -12,7 +12,7 @@ load ./lib/utils.bash
 }
 
 @test "-r:regex(a+b+c+):aabbbcccc" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([r]="aabbbcccc" )'
@@ -21,7 +21,7 @@ load ./lib/utils.bash
 }
 
 @test "--regex-arg:regex(a+b+c+):aabbbcccc" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([regex-arg]="aabbbcccc" )'

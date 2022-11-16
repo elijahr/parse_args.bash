@@ -6,10 +6,10 @@ load ./lib/utils.bash
   out=$(mktemp)
   status=0
   # run bash with a bare environment
-  env -i PATH=${PATH@Q} HOME=${HOME@Q} bash --noprofile \
-    test/scripts/test-does-not-leak-variables.bash > $out 2>&1 || status=$?
-  output=$(cat $out)
-  rm $out
+  env -i PATH="${PATH@Q}" HOME="${HOME@Q}" bash --noprofile \
+    test/scripts/test-does-not-leak-variables.bash >"$out" 2>&1 || status=$?
+  output=$(cat "$out")
+  rm "$out"
   assert_success
   assert_output "success"
 }

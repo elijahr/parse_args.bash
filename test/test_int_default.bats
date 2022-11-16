@@ -3,7 +3,7 @@ load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
 @test "-i|--int-arg:int:-123" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([int-arg]="-123" )'
@@ -12,7 +12,7 @@ load ./lib/utils.bash
 }
 
 @test "-i:int:-123" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([i]="-123" )'
@@ -21,7 +21,7 @@ load ./lib/utils.bash
 }
 
 @test "--int-arg:int:-123" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([int-arg]="-123" )'
@@ -30,7 +30,7 @@ load ./lib/utils.bash
 }
 
 @test "-i|--int-arg:int:zzz" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -39,7 +39,7 @@ load ./lib/utils.bash
 }
 
 @test "-i:int:zzz" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -48,7 +48,7 @@ load ./lib/utils.bash
 }
 
 @test "--int-arg:int:zzz" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'

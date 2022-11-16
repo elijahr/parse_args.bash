@@ -3,7 +3,7 @@ load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
 @test "-f|--float-arg:float:-3.14" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([float-arg]="-3.14" )'
@@ -12,7 +12,7 @@ load ./lib/utils.bash
 }
 
 @test "-f:float:-3.14" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([f]="-3.14" )'
@@ -21,7 +21,7 @@ load ./lib/utils.bash
 }
 
 @test "--float-arg:float:-3.14" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([float-arg]="-3.14" )'
@@ -30,7 +30,7 @@ load ./lib/utils.bash
 }
 
 @test "-f|--float-arg:float:zzz" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -39,7 +39,7 @@ load ./lib/utils.bash
 }
 
 @test "-f:float:zzz" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -48,7 +48,7 @@ load ./lib/utils.bash
 }
 
 @test "--float-arg:float:zzz" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'

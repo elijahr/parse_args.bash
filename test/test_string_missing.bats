@@ -3,7 +3,7 @@ load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
 @test "-s|--string-arg:string -- -s" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -12,7 +12,7 @@ load ./lib/utils.bash
 }
 
 @test "-s|--string-arg:string -- --string-arg" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -21,7 +21,7 @@ load ./lib/utils.bash
 }
 
 @test "-s:string -- -s" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -30,7 +30,7 @@ load ./lib/utils.bash
 }
 
 @test "--string-arg:string -- --string-arg" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -39,7 +39,7 @@ load ./lib/utils.bash
 }
 
 @test "-s|--string-arg:string:default-value -- -s" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -48,7 +48,7 @@ load ./lib/utils.bash
 }
 
 @test "-s|--string-arg:string:default-value -- --string-arg" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -57,7 +57,7 @@ load ./lib/utils.bash
 }
 
 @test "-s:string:default-value -- -s" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
@@ -66,7 +66,7 @@ load ./lib/utils.bash
 }
 
 @test "--string-arg:string:default-value -- --string-arg" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'

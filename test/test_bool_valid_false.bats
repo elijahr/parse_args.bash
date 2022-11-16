@@ -3,7 +3,7 @@ load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
 @test "-b|--bool-arg:bool -- -b=false" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([bool-arg]="false" )'
@@ -12,7 +12,7 @@ load ./lib/utils.bash
 }
 
 @test "-b|--bool-arg:bool -- -b:false" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([bool-arg]="false" )'
@@ -21,7 +21,7 @@ load ./lib/utils.bash
 }
 
 @test "-b|--bool-arg:bool -- -b false" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([bool-arg]="false" )'
@@ -30,7 +30,7 @@ load ./lib/utils.bash
 }
 
 @test "-b|--bool-arg:bool -- -bfalse" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([bool-arg]="false" )'
@@ -39,7 +39,7 @@ load ./lib/utils.bash
 }
 
 @test "-b|--bool-arg:bool -- --bool-arg=false" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([bool-arg]="false" )'
@@ -48,7 +48,7 @@ load ./lib/utils.bash
 }
 
 @test "-b|--bool-arg:bool -- --bool-arg:false" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([bool-arg]="false" )'
@@ -57,7 +57,7 @@ load ./lib/utils.bash
 }
 
 @test "-b|--bool-arg:bool -- --bool-arg false" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([bool-arg]="false" )'
@@ -66,7 +66,7 @@ load ./lib/utils.bash
 }
 
 @test "-b:bool -- -b=false" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([b]="false" )'
@@ -75,7 +75,7 @@ load ./lib/utils.bash
 }
 
 @test "-b:bool -- -b:false" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([b]="false" )'
@@ -84,7 +84,7 @@ load ./lib/utils.bash
 }
 
 @test "-b:bool -- -b false" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([b]="false" )'
@@ -93,7 +93,7 @@ load ./lib/utils.bash
 }
 
 @test "-b:bool -- -bfalse" {
-  read -a test_args <<< "$BATS_TEST_DESCRIPTION"
+  read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_success
   assert_line 'declare -A args=([b]="false" )'
