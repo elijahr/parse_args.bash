@@ -29,9 +29,12 @@ _pa_validate_value() {
   float) [[ $value =~ ^-?[0-9]+(\.[0-9]+)?$ ]] || return 1 ;;
   bool) [[ $value =~ ^(true)|(false)$ ]] || return 1 ;;
   switch) [[ $value =~ ^(on|off)$ ]] || return 1 ;;
-  regex)
-    # shellcheck disable=SC2076
-    [[ $value =~ ${type#regex:} ]] || return 1
+  regex*)
+    if [[ $type =~ (regex\((.*)\)) ]]; then
+      [[ $value =~ ${BASH_REMATCH[2]} ]] || return 1
+    else
+      return 1
+    fi
     ;;
   esac
 }
