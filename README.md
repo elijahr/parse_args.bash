@@ -136,7 +136,7 @@ fi
 
 - Be excellent enough to be considered the de facto argument parser in the Bash ecosystem.
 
-
 ### TODO
+
 - implement print_usage
 - works with zsh?
