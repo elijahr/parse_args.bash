@@ -7,6 +7,7 @@ on:
   pull_request:
     branches: ['*']
     paths:
+      - .github/workflows/test.yml
       - parse_args.bash
       - test/** # changes to tests
       - package*.json # bats upgrade
@@ -14,6 +15,7 @@ on:
     branches: ['devel']
     tags: ['*']
     paths:
+      - .github/workflows/test.yml
       - parse_args.bash
       - test/** # changes to tests
       - package*.json # bats upgrade
