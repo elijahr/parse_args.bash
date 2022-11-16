@@ -1,0 +1,9 @@
+{
+  "check_args": {
+    "yamllint": "-c ./.yamllint.yml"
+  },
+  "write_args": {
+    "yamllint": "-c ./.yamllint.yml"
+  },
+  "ignores": ["*/.git/*", "*/node_modules/*"]
+}

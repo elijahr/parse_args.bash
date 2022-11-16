@@ -1,0 +1,43 @@
+# yamllint disable rule:line-length
+
+name: test
+
+# yamllint disable rule:truthy
+on:
+  pull_request:
+    branches: ['*']
+    paths:
+      - parse_args.bash
+      - test/** # changes to tests
+      - package*.json # bats upgrade
+  push:
+    branches: ['devel']
+    tags: ['*']
+    paths:
+      - parse_args.bash
+      - test/** # changes to tests
+      - package*.json # bats upgrade
+# yamllint enable rule:truthy
+
+jobs:
+  # Run tests with bats
+  test:
+    name: Bats tests
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '15'
+
+      - name: Run tests
+        run: |
+          npm install --include=dev
+          [ -n "$(which bats)" ] || npm link bats
+          npm run test -- --jobs 4
