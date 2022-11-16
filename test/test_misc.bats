@@ -32,7 +32,8 @@ load ./lib/utils.bash
   assert_failure 1
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([v]="Unknown argument '"'-v'"'" [help]="Unknown argument '"'--help'"'" )'
+  assert_line --regexp 'declare -A arg_errors=\(.*\[v\]="Unknown argument '"'-v'"'".*\)'
+  assert_line --regexp 'declare -A arg_errors=\(.*\[help\]="Unknown argument '"'--help'"'".*\)'
 }
 
 @test "resets bash options" {
