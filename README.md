@@ -134,30 +134,9 @@ fi
 
 ## Excellence
 
-- Be the de facto argument parser in the Bash ecosystem.
+- Be excellent enough to be considered the de facto argument parser in the Bash ecosystem.
 
-parse_args behavior can be set via variables prior to sourcing this script:
 
-pa_output_array_name=<string>
-The name of the associative array to write parsed arguments to. Defaults to
-'parsed_args'.
-
-pa_argdef_error_array_name=<string>
-The name of the associative array to write errors parsing the argdefs to.
-Defaults to 'argdef_errors'.
-
-pa_arg_error_array_name=<string>
-The name of the associative array to write errors parsing the args to.
-Defaults to 'parsing_errors'.
-
-# TODO
-
-# - verify no namespace collisions with existing functions, variables and env vars before setting any variables
-
-# - a bats test should verify all variables are unset - using something like this https://stackoverflow.com/questions/1305237/how-to-list-variables-declared-in-script-in-bash
-
-# - implement print_usage
-
-# - works with zsh?
-
-# - create separate repo with tests and such
+### TODO
+- implement print_usage
+- works with zsh?
