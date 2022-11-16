@@ -28,3 +28,30 @@ load ./lib/utils.bash
   assert_line 'declare -A argdef_errors=()'
   assert_line 'declare -A arg_errors=()'
 }
+
+@test "'-u|--uint-arg:uint:-456'" {
+  eval test_args=($BATS_TEST_DESCRIPTION)
+  run_parse_args "${test_args[@]}"
+  assert_failure
+  assert_line 'declare -A args=()'
+  assert_line 'declare -A argdef_errors=(["-u|--uint-arg:uint:-456"]="Invalid default value '"'-456'"' for type uint" )'
+  assert_line 'declare -A arg_errors=()'
+}
+
+@test "-u:uint:-456" {
+  eval test_args=($BATS_TEST_DESCRIPTION)
+  run_parse_args "${test_args[@]}"
+  assert_failure
+  assert_line 'declare -A args=()'
+  assert_line 'declare -A argdef_errors=([-u:uint:-456]="Invalid default value '"'-456'"' for type uint" )'
+  assert_line 'declare -A arg_errors=()'
+}
+
+@test "--uint-arg:uint:-456" {
+  eval test_args=($BATS_TEST_DESCRIPTION)
+  run_parse_args "${test_args[@]}"
+  assert_failure
+  assert_line 'declare -A args=()'
+  assert_line 'declare -A argdef_errors=([--uint-arg:uint:-456]="Invalid default value '"'-456'"' for type uint" )'
+  assert_line 'declare -A arg_errors=()'
+}

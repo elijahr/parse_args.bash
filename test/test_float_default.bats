@@ -28,3 +28,30 @@ load ./lib/utils.bash
   assert_line 'declare -A argdef_errors=()'
   assert_line 'declare -A arg_errors=()'
 }
+
+@test "'-f|--float-arg:float:zzz'" {
+  eval test_args=($BATS_TEST_DESCRIPTION)
+  run_parse_args "${test_args[@]}"
+  assert_failure
+  assert_line 'declare -A args=()'
+  assert_line 'declare -A argdef_errors=(["-f|--float-arg:float:zzz"]="Invalid default value '"'zzz'"' for type float" )'
+  assert_line 'declare -A arg_errors=()'
+}
+
+@test "-f:float:zzz" {
+  eval test_args=($BATS_TEST_DESCRIPTION)
+  run_parse_args "${test_args[@]}"
+  assert_failure
+  assert_line 'declare -A args=()'
+  assert_line 'declare -A argdef_errors=([-f:float:zzz]="Invalid default value '"'zzz'"' for type float" )'
+  assert_line 'declare -A arg_errors=()'
+}
+
+@test "--float-arg:float:zzz" {
+  eval test_args=($BATS_TEST_DESCRIPTION)
+  run_parse_args "${test_args[@]}"
+  assert_failure
+  assert_line 'declare -A args=()'
+  assert_line 'declare -A argdef_errors=([--float-arg:float:zzz]="Invalid default value '"'zzz'"' for type float" )'
+  assert_line 'declare -A arg_errors=()'
+}

@@ -28,3 +28,30 @@ load ./lib/utils.bash
   assert_line 'declare -A argdef_errors=()'
   assert_line 'declare -A arg_errors=()'
 }
+
+@test "'-b|--bool-arg:bool:zzz'" {
+  eval test_args=($BATS_TEST_DESCRIPTION)
+  run_parse_args "${test_args[@]}"
+  assert_failure
+  assert_line 'declare -A args=()'
+  assert_line 'declare -A argdef_errors=(["-b|--bool-arg:bool:zzz"]="Invalid default value '"'zzz'"' for type bool" )'
+  assert_line 'declare -A arg_errors=()'
+}
+
+@test "-b:bool:zzz" {
+  eval test_args=($BATS_TEST_DESCRIPTION)
+  run_parse_args "${test_args[@]}"
+  assert_failure
+  assert_line 'declare -A args=()'
+  assert_line 'declare -A argdef_errors=([-b:bool:zzz]="Invalid default value '"'zzz'"' for type bool" )'
+  assert_line 'declare -A arg_errors=()'
+}
+
+@test "--bool-arg:bool:zzz" {
+  eval test_args=($BATS_TEST_DESCRIPTION)
+  run_parse_args "${test_args[@]}"
+  assert_failure
+  assert_line 'declare -A args=()'
+  assert_line 'declare -A argdef_errors=([--bool-arg:bool:zzz]="Invalid default value '"'zzz'"' for type bool" )'
+  assert_line 'declare -A arg_errors=()'
+}
