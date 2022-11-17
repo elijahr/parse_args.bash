@@ -3,64 +3,66 @@
 a sourceable bash script for inline parsing of arguments
 
 ```
-Usage: source parse_args.bash [ARGDEF] [ARGDEF] ...
+Usage: source parse_args.bash [ARGDEF+] -- [ARG+]
 
 ARGDEF:
 
   A string of one of these forms:
 
-    -<short>|--<long>[:<type>][:<default>][:<min-args|required|optional>][:<max-args|unlimited>][:<mode>]
+    -<short>|--<name>:type(<type>):default(<default>):default-array(<default>):num(<num>):mode(<mode>)
 
-    -<short>[:<type>][:<default>][:<min-args|required|optional>][:<max-args|unlimited>][:<mode>]
-
-    --<long>[:<type>][:<default>][:<min-args|required|optional>][:<max-args|unlimited>][:<mode>]
-
-    <pos>[:<type>][:<default>][:<min-args|required|optional>][:<max-args|unlimited>][:<mode>]
+    <name>:type(<type>):default(<default>):default-array(<default-array>):num(<num>):mode(<mode>)
 
   where:
 
     <short>
       is a single character e.g. 'h' for the '-h' option.
 
-    <long>
-      is a string of characters e.g. 'version' for the '--version' option.
+    <name>
+      is a string of characters e.g. 'version' for the '--version' keyword
+      argument or 'id' for the 'id' positional argument.
 
-    <pos>
-      is a string of characters, and must be unique e.g. 'name' for the
-      'name' positional argument.
-
-    [<type>]
-      is optional, one of the strings 'string', 'int', 'uint', 'float', 'bool',
-      'switch', or 'regex(<regex>)' where <regex> is a valid bash regex string
-      that can be used with the =~ operator.
+    <type>
+      one of:
+        'string' 'int' 'uint' 'float' 'bool' 'switch'
+      the type to validate the argument against
       (default: 'string')
 
-    [<default>]
-      is optional, a string of characters containing the default value for the
-      argument. If max-args > 1 this can be a string containing the name of a
-      bash array to pull default values from if no arguments are passed
-      matching this argdef.
+    <default>
+      the default value for the argument if not provided.
+      invalid if if max-args > 1.
       (default: '')
 
-    [<min-args>]
-      is optional, an integer or one of the strings 'optional' or 'required'.
-      An integer means that the argument must occur at least that many times.
-      'optional' means that the argument is optional and can occur zero or one
-      times. 'required' means that the argument is required and must occur once
-      and only once.
-      (default: '0')
+    <default-array>
+      the name of an array to copy values from into "args__<name>".
+      invalid if max-args <= 0.
+      (default: '')
 
-    [<max-args>]
-      is optional, an integer or the string 'unlimited'. An integer means that
-      the argument must occur at most that many times. 'unlimited' means that
-      the argument can occur any number of times more than the min-args value.
-      (default: '1')
+    <num>
+      one of:
+        'optional' 'required' 'unlimited' '<min-args>,[<max-args>]'
+      'optional': shorthand for '0,1'
+      'required': shorthand for '1,1'
+      'unlimited': shorthand for '0,'
+      (default: 'optional')
 
-    [<mode>]
-      is optional, the string 'store'. When max-args is > 1 and default is set,
-      this can also be the string 'append'. If 'append', all values from
-      the default array will be copied to the output array prior to processing
-      input arguments..
+    <min-args>
+      an integer, the minimum acceptable number of arguments.
+
+    <max-args>
+      an integer, the maximum acceptable number of arguments.
+      if max-args is > 1, an array "args__<name>" will contain the parsed
+      argument values.
+
+    <mode>
+      one of:
+        'store' 'append'
+      'store': if <max-args> is <=1, values are placed in the 'args' array.
+      'store': if <max-args> is > 1, values are placed in an "args__<name>" array.
+      'append': if <max-args> is <=1, 'append' is an invalid <mode>.
+      'append': if <max-args> is > 1, values from <default-array> are placed
+                in "args__<name>" and additional parsed values are appended to
+                the array.
       (default: 'store')
 ```
 
@@ -126,7 +128,7 @@ fi
 
 - Common argument patterns: `--arg value, --arg=value, --arg:value`
 - Required and optional arguments, or specific min/max arg counts
-- Type checking and pattern matching: `float, int, bool, regex`
+- Type checking and pattern matching: `float, int, bool, uint`
 - Single-file; download the script to your repo and use as needed
 - No viral licensing: MIT Licensed
 - Full Bash and ZSH support

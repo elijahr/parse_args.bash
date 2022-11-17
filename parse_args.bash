@@ -40,7 +40,7 @@ _pa_validate_value() {
 
 # Parse argdefs from the input args
 _pa_parse_argdefs() {
-  local argdef parts tail_parts short long name type default min_args max_args pos
+  local argdef parts tail_parts short long name type default min_args max_args pos mode
   while [[ $# -gt 0 ]]; do
     argdef=$1
     shift
@@ -138,7 +138,7 @@ _pa_parse_argdefs() {
         continue
       fi
       max_args=1
-    elif [[ ! $min_args =~ (^[0-9]+$) ]]; then
+    elif [[ ! $min_args =~ (^([0-9]+)$) ]]; then
       # shellcheck disable=SC2034
       argdef_errors[$argdef]="Invalid min-args value ${BASH_REMATCH[1]@Q}"
       continue
@@ -170,6 +170,9 @@ _pa_parse_argdefs() {
 
     # if argdef has a default value, validate it
     if [ -n "$default" ]; then
+
+      zzz type="${parts[1]:-string}"
+
       if ! _pa_validate_value "$type" "$default"; then
         # shellcheck disable=SC2034
         argdef_errors[$argdef]="Invalid default value ${default@Q} for type ${type}"
@@ -403,7 +406,7 @@ for _pa_arg_name in "${!type_by_name[@]}"; do
     if [ "$_pa_min_args" -eq 1 ]; then
       arg_errors[$_pa_arg_name]="Missing required argument ${_pa_arg_name}"
     else
-      arg_errors[$_pa_arg_name]="Missing $((_pa_min_args - _pa_count)) required arguments ${_pa_arg_name}"
+      arg_errors[$_pa_arg_name]="Missing $((_pa_min_args - _pa_count)) required arguments for ${_pa_arg_name}"
     fi
   fi
 done
