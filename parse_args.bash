@@ -24,20 +24,18 @@ _pa_validate_value() {
   type="$1"
   value="$2"
   case $type in
-    int) [[ $value =~ ^-?[0-9]+$ ]] || return 1 ;;
-    uint) [[ $value =~ ^[0-9]+$ ]] || return 1 ;;
-    float) [[ $value =~ ^-?[0-9]+(\.[0-9]+)?$ ]] || return 1 ;;
-    bool) [[ $value =~ ^(true)|(false)$ ]] || return 1 ;;
-    switch) [[ $value =~ ^(on|off)$ ]] || return 1 ;;
+    string) return 0 ;;
+    switch) [ -z "$value" ] && return 0 ;;
+    int) [[ $value =~ ^-?[0-9]+$ ]] && return 0 ;;
+    uint) [[ $value =~ ^[0-9]+$ ]] && return 0 ;;
+    float) [[ $value =~ ^-?[0-9]+(\.[0-9]+)?$ ]] && return 0 ;;
+    bool) [[ $value =~ ^(true)|(false)$ ]] && return 0 ;;
     regex\(\)) return 0 ;; # special case for empty regex, matches everything
-    regex*)
-      if [[ $type =~ (regex\((.*)\)) ]]; then
-        [[ $value =~ ${BASH_REMATCH[2]} ]] || return 1
-      else
-        return 1
-      fi
-      ;;
+    regex*) [[ $type =~ (regex\((.*)\)) ]] &&
+      [[ $value =~ ${BASH_REMATCH[2]} ]] &&
+      return 0 ;;
   esac
+  return 1
 }
 
 # Parse argdefs from the input args
@@ -169,12 +167,9 @@ _pa_parse_argdefs() {
     fi
 
     default=${parts[2]:-}
-    if [ "$type" = "switch" ] && [ "$default" = "" ]; then
-      default=off
-    fi
 
-    # if argument is required or has a default value, validate default
-    if [ "$min_args" -gt 0 ] || [ -n "$default" ]; then
+    # if argdef has a default value, validate it
+    if [ -n "$default" ]; then
       if ! _pa_validate_value "$type" "$default"; then
         # shellcheck disable=SC2034
         argdef_errors[$argdef]="Invalid default value ${default@Q} for type ${type}"
@@ -188,16 +183,10 @@ _pa_parse_argdefs() {
       continue
     fi
 
-    if [ "$type" = "switch" ]; then
-      if [ "$min_args" -gt 0 ] || [ "$max_args" -gt 1 ]; then
-        # shellcheck disable=SC2034
-        argdef_errors[$argdef]="Switch arguments cannot have min-args or max-args greater than 1"
-        continue
-      fi
-    fi
-
     type_by_name[$name]=$type
-    default_by_name[$name]=$default
+    if [ "$default" != "" ] || [ "$type" = "string" ] || [[ $type =~ ^regex ]]; then
+      default_by_name[$name]=$default
+    fi
     min_args_by_name[$name]=$min_args
     max_args_by_name[$name]=$max_args
 
@@ -211,7 +200,7 @@ _pa_parse_argdefs() {
 
 # Parse an array of arguments
 _pa_parse_args() {
-  local pos_index arg default name value type min_args max_args
+  local pos_index arg name value type min_args max_args
   pos_index=0
 
   # Initialize counts
@@ -270,24 +259,13 @@ _pa_parse_args() {
 
       # Get value
       if [[ $arg =~ ^-[-a-zA-Z0-9_]+[=:](.*)$ ]] || [[ $arg =~ ^-[a-zA-Z0-9_](.+)$ ]]; then
-        # --arg=value, -a=value, --arg:value or -a:value
-        if [ "$type" = "switch" ]; then
-          # shellcheck disable=SC2034
-          arg_errors[$name]="Cannot pass value to switch arguments"
-          shift
-          continue
-        fi
-
+        # `--arg=value`, `-a=value`, `--arg:value` or `-a:value`
         value=${BASH_REMATCH[1]}
       elif [ "$type" = "switch" ]; then
-        default=${default_by_name[$name]}
-        if [ "$default" = "off" ]; then
-          value=on
-        else
-          value=off
-        fi
+        # `--arg` or `-a`
+        value=""
       else
-        # --arg value or -a value
+        # `--arg value` or `-a value`
         shift
         if [ "$#" -eq 0 ]; then
           # shellcheck disable=SC2034
@@ -309,6 +287,10 @@ _pa_parse_args() {
         pos=${pos_order[$pos_index]}
         name="$pos"
       else
+        if [ -z "$name" ]; then
+          name=$pos_index
+        fi
+        echo "suppppp name=${name@Q}"
         arg_errors[$name]="Too many positional arguments: ${arg}"
         shift
         continue
@@ -317,29 +299,15 @@ _pa_parse_args() {
 
     if [[ ! -v type_by_name[$name] ]]; then
       # shellcheck disable=SC2034
-      arg_errors[$name]="Unknown argumentzz ${arg}"
+      arg_errors[$name]="Unknown argument ${arg}"
       shift
       continue
     fi
 
     type=${type_by_name[$name]}
-    default=${default_by_name[$name]}
     min_args=${min_args_by_name[$name]}
     max_args=${max_args_by_name[$name]}
 
-    # if [ "$value" = "" ] && [ "$max_args" -eq 1 ]; then
-    #   # if no value given and max-args is 1 then error
-
-    #   # shellcheck disable=SC2034
-    #   if [ -n "$long" ]; then
-    #     arg_errors[$name]="Missing value for argument --${long}"
-    #   elif [ -n "$short" ]; then
-    #     arg_errors[$name]="Missing value for argument -${short}"
-    #   else
-    #     arg_errors[$name]="Missing value for argument ${pos}"
-    #   fi
-    #   shift
-    #   continue
     if ! _pa_validate_value "$type" "$value"; then
       # validate the value against the specified type
 
@@ -377,9 +345,25 @@ _pa_parse_args() {
 
   # Set default values
   for name in "${!default_by_name[@]}"; do
-    if [[ ! -v arg_errors[$name] ]] && [[ ! -v args[$name] ]] && [[ -v default_by_name[$name] ]]; then
-      default=${default_by_name[$name]}
-      args[$name]=$default
+    if [[ ! -v arg_errors[$name] ]] && [[ -v default_by_name[$name] ]] && [ -n "${default_by_name[$name]}" ]; then
+      # banana="${max_args_by_name[$name]}"
+      # banana=[ $(eval "echo \${#args__${name}[@]}") -eq 0 ]
+      if [[ -v max_args_by_name[$name] ]]; then
+        if [ "${max_args_by_name[$name]}" = "unlimited" ] || [ "${max_args_by_name[$name]}" -gt 1 ]; then
+          if [ "${#count_by_name[$name]}" -eq 0 ]; then
+            echo "setting array default for $name: ${default_by_name[$name]}"
+            eval "args__${name}+=(\"\${${default_by_name[$name]}[@]}\")"
+          fi
+        else
+          if [[ ! -v args[$name] ]]; then
+            args[$name]=${default_by_name[$name]}
+          fi
+        fi
+      else
+        if [[ ! -v args[$name] ]]; then
+          args[$name]=${default_by_name[$name]}
+        fi
+      fi
     fi
   done
 }
@@ -403,7 +387,7 @@ fi
 for _pa_arg_name in "${!type_by_name[@]}"; do
   _pa_max_args=${max_args_by_name[$_pa_arg_name]}
   if [ "$_pa_max_args" = "unlimited" ] || [ "$_pa_max_args" -gt 1 ]; then
-    eval "declare -a args__$_pa_arg_name=()"
+    eval "declare -a args__${_pa_arg_name}=()"
   fi
 done
 unset _pa_arg_name _pa_max_args

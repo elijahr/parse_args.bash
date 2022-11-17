@@ -9,13 +9,13 @@ ARGDEF:
 
   A string of one of these forms:
 
-    -<short>|--<long>[:<type>][:<default>][:<min-args|required|optional>][:<max-args|unlimited>]
+    -<short>|--<long>[:<type>][:<default>][:<min-args|required|optional>][:<max-args|unlimited>][:<mode>]
 
-    -<short>[:<type>][:<default>][:<min-args|required|optional>][:<max-args|unlimited>]
+    -<short>[:<type>][:<default>][:<min-args|required|optional>][:<max-args|unlimited>][:<mode>]
 
-    --<long>[:<type>][:<default>][:<min-args|required|optional>][:<max-args|unlimited>]
+    --<long>[:<type>][:<default>][:<min-args|required|optional>][:<max-args|unlimited>][:<mode>]
 
-    <pos>[:<type>][:<default>][:<min-args|required|optional>][:<max-args|unlimited>]
+    <pos>[:<type>][:<default>][:<min-args|required|optional>][:<max-args|unlimited>][:<mode>]
 
   where:
 
@@ -30,35 +30,44 @@ ARGDEF:
       'name' positional argument.
 
     [<type>]
-      is the optional type, one of 'string', 'int', 'int(min, max)',
-      'uint', 'uint(min, max), 'float', 'float(min, max)', 'bool', 'switch',
-      or 'regex(<regex>)' where <regex> is a valid bash regex string that can
-      be used with the =~ operator.
+      is optional, one of the strings 'string', 'int', 'uint', 'float', 'bool',
+      'switch', or 'regex(<regex>)' where <regex> is a valid bash regex string
+      that can be used with the =~ operator.
       (default: 'string')
 
     [<default>]
-      is a string of characters containing the default value for the
-      argument.
+      is optional, a string of characters containing the default value for the
+      argument. If max-args > 1 this can be a string containing the name of a
+      bash array to pull default values from if no arguments are passed
+      matching this argdef.
       (default: '')
 
     [<min-args>]
-      is an integer or one of the strings 'optional' or 'required'.
+      is optional, an integer or one of the strings 'optional' or 'required'.
+      An integer means that the argument must occur at least that many times.
       'optional' means that the argument is optional and can occur zero or one
       times. 'required' means that the argument is required and must occur once
-      and only once. An integer means that the argument must occur at least
-      that many times.
+      and only once.
       (default: '0')
 
     [<max-args>]
-      is an integer or the string 'unlimited'. 'unlimited' means that the
-      argument can occur any number of times more than the min-args value. An
-      integer means that the argument must occur at most that many times.
+      is optional, an integer or the string 'unlimited'. An integer means that
+      the argument must occur at most that many times. 'unlimited' means that
+      the argument can occur any number of times more than the min-args value.
       (default: '1')
+
+    [<mode>]
+      is optional, the string 'store'. When max-args is > 1 and default is set,
+      this can also be the string 'append'. If 'append', all values from
+      the default array will be copied to the output array prior to processing
+      input arguments..
+      (default: 'store')
 ```
 
 # Example:
 
 ```bash
+default_options=("send-notification")
 argdefs=(
   "-h|--help:switch"
   "-v|--version:switch"
@@ -66,18 +75,18 @@ argdefs=(
   "-a|--age:int:min_args"
   "-i|--is-vegetarian:bool"
   "--height:float:3.14"
-  "-o|--option:string:0:5"
+  "-o|--option:string:default_options:0:5:append"
 )
 
 if source parse_args.bash "${argdefs[@]}" -- "$@"; then
-  if [ "${parsed_args[help]}" = "on" ]; then
+  if [ "${parsed_args[help]}" = "" ]; then
     # help switch was passed
     # parse_args.bash provides a helper function to print usage
     print_usage
     exit 0
   fi
 
-  if [ "${parsed_args[version]}" = "on" ]; then
+  if [ "${parsed_args[version]}" = "" ]; then
     echo "Version: 1.0.0" >&2
     exit 0
   fi
@@ -85,7 +94,9 @@ if source parse_args.bash "${argdefs[@]}" -- "$@"; then
   echo "Name: ${parsed_args[name]}"
   echo "Age: ${parsed_args[age]}"
   echo "Height: ${parsed_args[height]}"
-  # Options with + are stored in an array named `parsed_args__<optionname>`
+  # "option" accepts up to 5 arguments, so the values are stored in an array
+  # named `parsed_args__option`. Values from `default_options` are copied
+  # into `parsed_args__option` because the 'append' mode was passed.
   for option in "${parsed_args__option[@]}"; do
     echo "Option: ${option}"
   done
@@ -138,5 +149,8 @@ fi
 
 ### TODO
 
-- implement print_usage
-- works with zsh?
+- implement print_usage / print_help
+- test against zsh
+- Implement min/max for int, uint, float
+- Implement "keyvalue" type which makes args\_\_<argname> an associative array
+- Improve docs

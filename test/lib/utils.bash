@@ -1,7 +1,7 @@
 # # argdefs that cover basic functionality
 # argdefs=(
 
-#   '-2|--switch-2:switch:off'
+#   '-2|--switch-2:switch'
 #   '-s:string'
 #   '--long-1:float'
 #   '--long-2:int'
@@ -29,6 +29,7 @@ run_parse_args() {
     echo 'declare -p args'
     echo 'declare -p arg_errors'
     echo 'declare -p argdef_errors'
+    echo 'declare -p | grep "declare -a args__"'
     # shellcheck disable=SC2016
     echo 'exit $status'
   } >>"$script"
