@@ -8,7 +8,6 @@ declare -A argdef_errors=()
 declare -A arg_errors=()
 
 declare -A type_by_name=()
-declare -A default_by_name=()
 declare -A min_args_by_name=()
 declare -A max_args_by_name=()
 declare -A count_by_name=()
@@ -40,7 +39,7 @@ _pa_validate_value() {
 
 # Parse argdefs from the input args
 _pa_parse_argdefs() {
-  local argdef parts tail_parts short long name type default min_args max_args pos mode
+  local argdef parts tail_parts short long name type num min_args max_args pos
   while [[ $# -gt 0 ]]; do
     argdef=$1
     shift
@@ -49,23 +48,15 @@ _pa_parse_argdefs() {
       break
     fi
     declare -a parts=()
-
-    # check for special case of regex containing colon
-    if [[ $argdef =~ ^([^:]+):(regex\(.*\))$ ]]; then
-      parts=("${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}")
-    elif [[ $argdef =~ ^([^:]+):(regex\(.*\)):(.*) ]]; then
-      parts=("${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}")
-      IFS=':' read -ra tail_parts <<<"${BASH_REMATCH[3]}"
-      parts+=("${tail_parts[@]}")
-    else
-      IFS=':' read -ra parts <<<"$argdef"
-    fi
+    IFS=':' read -ra parts <<<"$argdef"
 
     if [ ${#parts[@]} -eq 0 ]; then
       # shellcheck disable=SC2034
       argdef_errors[$argdef]="Empty argument definition"
       continue
     fi
+
+    echo "parts=${parts[@]}"
 
     if [[ ${parts[0]} =~ ^-([a-zA-Z0-9])$ ]]; then
       short="${BASH_REMATCH[1]}"
@@ -101,11 +92,41 @@ _pa_parse_argdefs() {
       continue
     fi
 
-    type=${parts[1]:-string}
-
+    type="string"
+    min_args=0
+    max_args=1
+    for part in "${parts[@]:1:${#parts[@]}-1}"; do
+      echo "part=$part"
+      if [[ $part =~ ^type\((.*)\)$ ]]; then
+        type="${BASH_REMATCH[1]}"
+      elif [[ $part =~ ^num\((.*)\)$ ]]; then
+        num="${BASH_REMATCH[1]}"
+        if [ "$num" = "optional" ]; then
+          max_args=1
+        elif [ "$num" = "required" ]; then
+          min_args=1
+          max_args=1
+        elif [ "$num" = "unlimited" ]; then
+          min_args=0
+          max_args=unlimited
+        elif [[ $num =~ ^([0-9]+)(,?)$ ]]; then
+          min_args="${BASH_REMATCH[1]}"
+        elif [[ $num =~ ^([0-9]+),([ ]*)(([0-9]+)|(unlimited))$ ]]; then
+          min_args="${BASH_REMATCH[1]}"
+          max_args="${BASH_REMATCH[3]}"
+        elif [[ $num =~ (required|optional) ]]; then
+          # shellcheck disable=SC2034
+          argdef_errors[$argdef]="Cannot specify min-args or max-args with 'required' or 'optional': ${num}"
+        else
+          # shellcheck disable=SC2034
+          argdef_errors[$argdef]="Invalid value: ${num}"
+          return 2
+        fi
+      fi
+    done
+    echo "type=$type"
     case $type in
       string | int | uint | float | bool | switch) ;;
-      regex\(*\)) ;;
       *)
         # shellcheck disable=SC2034
         argdef_errors[$argdef]="Invalid argument type $type"
@@ -117,30 +138,6 @@ _pa_parse_argdefs() {
     if [ "$type" = "switch" ] && [ -n "$pos" ]; then
       # shellcheck disable=SC2034
       argdef_errors[$argdef]="Invalid type ${type} for positional argument"
-      continue
-    fi
-
-    min_args=${parts[3]:-}
-    max_args=${parts[4]:-}
-    if [ "$min_args" = "required" ]; then
-      min_args=1
-      if [ -n "$max_args" ]; then
-        # shellcheck disable=SC2034
-        argdef_errors[$argdef]="Do not specify max-args for required arguments"
-        continue
-      fi
-      max_args=1
-    elif [ "$min_args" = "" ] || [ "$min_args" = "optional" ]; then
-      min_args=0
-      if [ -n "$max_args" ]; then
-        # shellcheck disable=SC2034
-        argdef_errors[$argdef]="Do not specify max-args for optional arguments"
-        continue
-      fi
-      max_args=1
-    elif [[ ! $min_args =~ (^([0-9]+)$) ]]; then
-      # shellcheck disable=SC2034
-      argdef_errors[$argdef]="Invalid min-args value ${BASH_REMATCH[1]@Q}"
       continue
     fi
 
@@ -166,30 +163,7 @@ _pa_parse_argdefs() {
       continue
     fi
 
-    default=${parts[2]:-}
-
-    # if argdef has a default value, validate it
-    if [ -n "$default" ]; then
-
-      zzz type="${parts[1]:-string}"
-
-      if ! _pa_validate_value "$type" "$default"; then
-        # shellcheck disable=SC2034
-        argdef_errors[$argdef]="Invalid default value ${default@Q} for type ${type}"
-        continue
-      fi
-    fi
-
-    if [ "$min_args" -gt 0 ] && [ "$default" != "" ]; then
-      # shellcheck disable=SC2034
-      argdef_errors[$argdef]="Cannot specify default value for required argument"
-      continue
-    fi
-
     type_by_name[$name]=$type
-    if [ "$default" != "" ] || [ "$type" = "string" ] || [[ $type =~ ^regex ]]; then
-      default_by_name[$name]=$default
-    fi
     min_args_by_name[$name]=$min_args
     max_args_by_name[$name]=$max_args
 
@@ -345,35 +319,11 @@ _pa_parse_args() {
     fi
     shift
   done
-
-  # Set default values
-  for name in "${!default_by_name[@]}"; do
-    if [[ ! -v arg_errors[$name] ]] && [[ -v default_by_name[$name] ]] && [ -n "${default_by_name[$name]}" ]; then
-      # banana="${max_args_by_name[$name]}"
-      # banana=[ $(eval "echo \${#args__${name}[@]}") -eq 0 ]
-      if [[ -v max_args_by_name[$name] ]]; then
-        if [ "${max_args_by_name[$name]}" = "unlimited" ] || [ "${max_args_by_name[$name]}" -gt 1 ]; then
-          if [ "${#count_by_name[$name]}" -eq 0 ]; then
-            echo "setting array default for $name: ${default_by_name[$name]}"
-            eval "args__${name}+=(\"\${${default_by_name[$name]}[@]}\")"
-          fi
-        else
-          if [[ ! -v args[$name] ]]; then
-            args[$name]=${default_by_name[$name]}
-          fi
-        fi
-      else
-        if [[ ! -v args[$name] ]]; then
-          args[$name]=${default_by_name[$name]}
-        fi
-      fi
-    fi
-  done
 }
 
 _pa_cleanup() {
   eval "${_pa_original_bashopts}"
-  unset _pa_original_bashopts default_by_name long_by_short min_args_by_name \
+  unset _pa_original_bashopts long_by_short min_args_by_name \
     max_args_by_name count_by_name pos_order type_by_name
   unset -f _pa_validate_value _pa_parse_argdefs _pa_parse_args _pa_cleanup
 }

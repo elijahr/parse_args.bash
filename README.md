@@ -9,9 +9,9 @@ ARGDEF:
 
   A string of one of these forms:
 
-    -<short>|--<name>:type(<type>):default(<default>):default-array(<default>):num(<num>):mode(<mode>)
+    -<short>|--<name>:type(<type>):num(<num>)
 
-    <name>:type(<type>):default(<default>):default-array(<default-array>):num(<num>):mode(<mode>)
+    <name>:type(<type>):num(<num>)
 
   where:
 
@@ -27,16 +27,6 @@ ARGDEF:
         'string' 'int' 'uint' 'float' 'bool' 'switch'
       the type to validate the argument against
       (default: 'string')
-
-    <default>
-      the default value for the argument if not provided.
-      invalid if if max-args > 1.
-      (default: '')
-
-    <default-array>
-      the name of an array to copy values from into "args__<name>".
-      invalid if max-args <= 0.
-      (default: '')
 
     <num>
       one of:
@@ -54,30 +44,18 @@ ARGDEF:
       if max-args is > 1, an array "args__<name>" will contain the parsed
       argument values.
 
-    <mode>
-      one of:
-        'store' 'append'
-      'store': if <max-args> is <=1, values are placed in the 'args' array.
-      'store': if <max-args> is > 1, values are placed in an "args__<name>" array.
-      'append': if <max-args> is <=1, 'append' is an invalid <mode>.
-      'append': if <max-args> is > 1, values from <default-array> are placed
-                in "args__<name>" and additional parsed values are appended to
-                the array.
-      (default: 'store')
 ```
 
 # Example:
 
 ```bash
-default_options=("send-notification")
 argdefs=(
-  "-h|--help:switch"
-  "-v|--version:switch"
-  "-n|--name:string:min_args"
-  "-a|--age:int:min_args"
-  "-i|--is-vegetarian:bool"
-  "--height:float:3.14"
-  "-o|--option:string:default_options:0:5:append"
+  "-h|--help:type(switch)"
+  "-v|--version:type(switch)"
+  "-n|--name:type(string):min_args"
+  "-a|--age:type(int):min_args"
+  "-i|--is-vegetarian:type(bool)"
+  "--height:type(float):3.14"
 )
 
 if source parse_args.bash "${argdefs[@]}" -- "$@"; then
@@ -97,8 +75,7 @@ if source parse_args.bash "${argdefs[@]}" -- "$@"; then
   echo "Age: ${parsed_args[age]}"
   echo "Height: ${parsed_args[height]}"
   # "option" accepts up to 5 arguments, so the values are stored in an array
-  # named `parsed_args__option`. Values from `default_options` are copied
-  # into `parsed_args__option` because the 'append' mode was passed.
+  # named `parsed_args__option`.
   for option in "${parsed_args__option[@]}"; do
     echo "Option: ${option}"
   done
@@ -121,33 +98,6 @@ else
   exit $parse_status
 fi
 ```
-
-# Philosophy
-
-## Flexibility
-
-- Common argument patterns: `--arg value, --arg=value, --arg:value`
-- Required and optional arguments, or specific min/max arg counts
-- Type checking and pattern matching: `float, int, bool, uint`
-- Single-file; download the script to your repo and use as needed
-- No viral licensing: MIT Licensed
-- Full Bash and ZSH support
-
-## Completeness
-
-- Clear and concise argument definition format
-- Argument parsing for both functions and commands
-
-## Predictability
-
-- Unit tests cover common and edge cases
-- Precise error codes and error messages
-- Fulfill contract outlined in documentation
-- No namespace pollution
-
-## Excellence
-
-- Be excellent enough to be considered the de facto argument parser in the Bash ecosystem.
 
 ### TODO
 

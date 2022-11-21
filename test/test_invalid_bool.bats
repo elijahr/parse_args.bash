@@ -2,128 +2,128 @@ load ../node_modules/bats-support/load
 load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
-@test "-f|--float-arg:float -- -f=bogus" {
+@test "-b|--bool-arg:type(bool) -- -b=bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([bool-arg]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "-f|--float-arg:float -- -f:bogus" {
+@test "-b|--bool-arg:type(bool) -- -b:bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([bool-arg]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "-f|--float-arg:float -- -f bogus" {
+@test "-b|--bool-arg:type(bool) -- -b bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([bool-arg]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "-f|--float-arg:float -- -fbogus" {
+@test "-b|--bool-arg:type(bool) -- -bbogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([bool-arg]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "-f|--float-arg:float -- --float-arg=bogus" {
+@test "-b|--bool-arg:type(bool) -- --bool-arg=bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([bool-arg]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "-f|--float-arg:float -- --float-arg:bogus" {
+@test "-b|--bool-arg:type(bool) -- --bool-arg:bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([bool-arg]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "-f|--float-arg:float -- --float-arg bogus" {
+@test "-b|--bool-arg:type(bool) -- --bool-arg bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([bool-arg]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "-f:float -- -f=bogus" {
+@test "-b:type(bool) -- -b=bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([f]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([b]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "-f:float -- -f:bogus" {
+@test "-b:type(bool) -- -b:bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([f]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([b]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "-f:float -- -f bogus" {
+@test "-b:type(bool) -- -b bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([f]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([b]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "-f:float -- -fbogus" {
+@test "-b:type(bool) -- -bbogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([f]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([b]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "--float-arg:float -- --float-arg=bogus" {
+@test "--bool-arg:type(bool) -- --bool-arg=bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([bool-arg]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "--float-arg:float -- --float-arg:bogus" {
+@test "--bool-arg:type(bool) -- --bool-arg:bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([bool-arg]="Invalid value '"'bogus'"' for type bool" )'
 }
 
-@test "--float-arg:float -- --float-arg bogus" {
+@test "--bool-arg:type(bool) -- --bool-arg bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
+  assert_line 'declare -A arg_errors=([bool-arg]="Invalid value '"'bogus'"' for type bool" )'
 }

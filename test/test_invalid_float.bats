@@ -2,128 +2,128 @@ load ../node_modules/bats-support/load
 load ../node_modules/bats-assert/load
 load ./lib/utils.bash
 
-@test "-u|--uint-arg:uint -- -u=-123" {
+@test "-f|--float-arg:type(float) -- -f=bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([uint-arg]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "-u|--uint-arg:uint -- -u:-123" {
+@test "-f|--float-arg:type(float) -- -f:bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([uint-arg]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "-u|--uint-arg:uint -- -u -123" {
+@test "-f|--float-arg:type(float) -- -f bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([uint-arg]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "-u|--uint-arg:uint -- -u-123" {
+@test "-f|--float-arg:type(float) -- -fbogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([uint-arg]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "-u|--uint-arg:uint -- --uint-arg=-123" {
+@test "-f|--float-arg:type(float) -- --float-arg=bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([uint-arg]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "-u|--uint-arg:uint -- --uint-arg:-123" {
+@test "-f|--float-arg:type(float) -- --float-arg:bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([uint-arg]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "-u|--uint-arg:uint -- --uint-arg -123" {
+@test "-f|--float-arg:type(float) -- --float-arg bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([uint-arg]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "-u:uint -- -u=-123" {
+@test "-f:type(float) -- -f=bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([u]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([f]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "-u:uint -- -u:-123" {
+@test "-f:type(float) -- -f:bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([u]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([f]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "-u:uint -- -u -123" {
+@test "-f:type(float) -- -f bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([u]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([f]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "-u:uint -- -u-123" {
+@test "-f:type(float) -- -fbogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([u]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([f]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "--uint-arg:uint -- --uint-arg=-123" {
+@test "--float-arg:type(float) -- --float-arg=bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([uint-arg]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "--uint-arg:uint -- --uint-arg:-123" {
+@test "--float-arg:type(float) -- --float-arg:bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([uint-arg]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }
 
-@test "--uint-arg:uint -- --uint-arg -123" {
+@test "--float-arg:type(float) -- --float-arg bogus" {
   read -ra test_args <<<"$BATS_TEST_DESCRIPTION"
   run_parse_args "${test_args[@]}"
   assert_failure
   assert_line 'declare -A args=()'
   assert_line 'declare -A argdef_errors=()'
-  assert_line 'declare -A arg_errors=([uint-arg]="Invalid value '"'-123'"' for type uint" )'
+  assert_line 'declare -A arg_errors=([float-arg]="Invalid value '"'bogus'"' for type float" )'
 }

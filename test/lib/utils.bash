@@ -1,13 +1,13 @@
 # # argdefs that cover basic functionality
 # argdefs=(
 
-#   '-2|--switch-2:switch'
-#   '-s:string'
-#   '--long-1:float'
-#   '--long-2:int'
-#   '--long-3:bool:42'
+#   '-2|--switch-2:type(switch)'
+#   '-s:type(string)'
+#   '--long-1:type(float)'
+#   '--long-2:type(int)'
+#   '--long-3:type(bool):42'
 #   '--long-3:regex:^matches \:a\: regex$:'
-#   '--long-4:int::2:3'
+#   '--long-4:type(int):num(2,3)'
 # )
 
 # run parse_args with a bare environment, pass through args, and print the
