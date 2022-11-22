@@ -39,7 +39,7 @@ _pa_validate_value() {
 
 # Parse argdefs from the input args
 _pa_parse_argdefs() {
-  local argdef parts tail_parts short long name type num min_args max_args pos
+  local argdef parts short long name type num min_args max_args pos
   while [[ $# -gt 0 ]]; do
     argdef=$1
     shift
@@ -55,8 +55,6 @@ _pa_parse_argdefs() {
       argdef_errors[$argdef]="Empty argument definition"
       continue
     fi
-
-    echo "parts=${parts[@]}"
 
     if [[ ${parts[0]} =~ ^-([a-zA-Z0-9])$ ]]; then
       short="${BASH_REMATCH[1]}"
@@ -96,7 +94,6 @@ _pa_parse_argdefs() {
     min_args=0
     max_args=1
     for part in "${parts[@]:1:${#parts[@]}-1}"; do
-      echo "part=$part"
       if [[ $part =~ ^type\((.*)\)$ ]]; then
         type="${BASH_REMATCH[1]}"
       elif [[ $part =~ ^num\((.*)\)$ ]]; then
@@ -124,7 +121,6 @@ _pa_parse_argdefs() {
         fi
       fi
     done
-    echo "type=$type"
     case $type in
       string | int | uint | float | bool | switch) ;;
       *)
@@ -267,7 +263,6 @@ _pa_parse_args() {
         if [ -z "$name" ]; then
           name=$pos_index
         fi
-        echo "suppppp name=${name@Q}"
         arg_errors[$name]="Too many positional arguments: ${arg}"
         shift
         continue
