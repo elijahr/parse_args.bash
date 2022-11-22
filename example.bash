@@ -1,56 +1,3 @@
-[![test](https://github.com/elijahr/parse_args.bash/actions/workflows/test.yml/badge.svg)](https://github.com/elijahr/parse_args.bash/actions/workflows/test.yml) [![lint](https://github.com/elijahr/parse_args.bash/actions/workflows/lint.yml/badge.svg)](https://github.com/elijahr/parse_args.bash/actions/workflows/lint.yml)
-
-# parse_args.bash
-
-a sourceable bash script for inline parsing of arguments
-
-```
-Usage: source parse_args.bash [ARGDEF+] -- [ARG+]
-
-ARGDEF:
-
-  A string of one of these forms:
-
-    -<short>|--<name>:type(<type>):num(<num>)
-
-    <name>:type(<type>):num(<num>)
-
-  where:
-
-    <short>
-      is a single character e.g. 'h' for the '-h' option.
-
-    <name>
-      is a string of characters e.g. 'version' for the '--version' keyword
-      argument or 'id' for the 'id' positional argument.
-
-    <type>
-      one of:
-        'string' 'int' 'uint' 'float' 'bool' 'switch'
-      the type to validate the argument against
-      (default: 'string')
-
-    <num>
-      one of:
-        'optional' 'required' 'unlimited' '<min-args>,[<max-args>]'
-      'optional': shorthand for '0,1'
-      'required': shorthand for '1,1'
-      'unlimited': shorthand for '0,'
-      (default: 'optional')
-
-    <min-args>
-      an integer, the minimum acceptable number of arguments.
-
-    <max-args>
-      an integer, the maximum acceptable number of arguments.
-      if max-args is > 1, an array "args__<name>" will contain the parsed
-      argument values.
-
-```
-
-# Example:
-
-```bash
 #!/usr/bin/env bash
 
 set -ueo pipefail
@@ -65,7 +12,7 @@ argdefs=(
   "--option : num(0,5)"
 )
 
-print_help () {
+print_help() {
   echo "Usage: $0 [options]"
   echo "Options:"
   echo "  -h, --help"
@@ -113,7 +60,7 @@ fi
 echo "Name: ${args[name]}"
 echo "Age: ${args[age]}"
 echo "Height: ${args[height]:-}"
-echo "Is Vegetarian: ${args[is-vegetarian]:-No}"
+echo "Is Vegetarian: ${args[is - vegetarian]:-No}"
 
 # "option" accepts up to 5 arguments, so the values are stored in an array
 # named `args__option`.
@@ -121,11 +68,3 @@ echo "Is Vegetarian: ${args[is-vegetarian]:-No}"
 for option in "${args__option[@]}"; do
   echo "Option: ${option}"
 done
-```
-
-### TODO
-
-- implement print_usage / print_help
-- test against zsh
-- Implement "keyvalue" type which makes args\_\_<argname> an associative array
-- Improve docs
