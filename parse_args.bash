@@ -179,7 +179,7 @@ _pa_parse_argdefs() {
 
 # Parse an array of arguments
 _pa_parse_args() {
-  local pos_index arg name value type min_args max_args
+  local pos_index arg name long short pos value type min_args max_args
   pos_index=0
 
   # Initialize counts
@@ -209,7 +209,6 @@ _pa_parse_args() {
         # --long arg
         long=${BASH_REMATCH[1]}
         name=$long
-        declare -p long
       elif [[ $arg =~ ^-([a-zA-Z0-9_]) ]]; then
         # -short arg
         short=${BASH_REMATCH[1]}
@@ -356,13 +355,15 @@ _pa_parse_args "$@"
 
 # check that all required args were passed
 for _pa_arg_name in "${!type_by_name[@]}"; do
-  _pa_min_args=${min_args_by_name[$_pa_arg_name]}
-  _pa_count=${count_by_name[$_pa_arg_name]}
-  if [ "$_pa_count" -lt "$_pa_min_args" ]; then
-    if [ "$_pa_min_args" -eq 1 ]; then
-      arg_errors[$_pa_arg_name]="Missing required argument ${_pa_arg_name}"
-    else
-      arg_errors[$_pa_arg_name]="Missing $((_pa_min_args - _pa_count)) required arguments for ${_pa_arg_name}"
+  if [[ ! -v arg_errors[$_pa_arg_name] ]]; then
+    _pa_min_args=${min_args_by_name[$_pa_arg_name]}
+    _pa_count=${count_by_name[$_pa_arg_name]}
+    if [ "$_pa_count" -lt "$_pa_min_args" ]; then
+      if [ "$_pa_min_args" -eq 1 ]; then
+        arg_errors[$_pa_arg_name]="Missing required argument ${_pa_arg_name}"
+      else
+        arg_errors[$_pa_arg_name]="Missing $((_pa_min_args - _pa_count)) required arguments for ${_pa_arg_name}"
+      fi
     fi
   fi
 done
