@@ -1,3 +1,5 @@
+[![test](https://github.com/elijahr/parse_args.bash/actions/workflows/test.yml/badge.svg)](https://github.com/elijahr/parse_args.bash/actions/workflows/test.yml) [![lint](https://github.com/elijahr/parse_args.bash/actions/workflows/lint.yml/badge.svg)](https://github.com/elijahr/parse_args.bash/actions/workflows/lint.yml)
+
 # parse_args.bash
 
 a sourceable bash script for inline parsing of arguments
@@ -50,23 +52,23 @@ ARGDEF:
 
 ```bash
 argdefs=(
-  "-h|--help:type(switch)"
-  "-v|--version:type(switch)"
-  "-n|--name:type(string):min_args"
-  "-a|--age:type(int):min_args"
-  "-i|--is-vegetarian:type(bool)"
-  "--height:type(float):3.14"
+  "-h|--help : type(switch)"
+  "-v|--version : type(switch)"
+  "-n|--name : type(string) : num(required)"
+  "-a|--age : type(int) : num(required)"
+  "-i|--is-vegetarian : type(bool) : num(optional)"
+  "--height : type(float) : num(optional)"
+  "--option : num(0,5)"
 )
 
 if source parse_args.bash "${argdefs[@]}" -- "$@"; then
-  if [ "${parsed_args[help]}" = "" ]; then
-    # help switch was passed
-    # parse_args.bash provides a helper function to print usage
-    print_usage
+  if [ "${parsed_args[help]}" = "on" ]; then
+    # help switch was passed - call your print_help function
+    print_help
     exit 0
   fi
 
-  if [ "${parsed_args[version]}" = "" ]; then
+  if [ "${parsed_args[version]}" = "on" ]; then
     echo "Version: 1.0.0" >&2
     exit 0
   fi
@@ -74,6 +76,7 @@ if source parse_args.bash "${argdefs[@]}" -- "$@"; then
   echo "Name: ${parsed_args[name]}"
   echo "Age: ${parsed_args[age]}"
   echo "Height: ${parsed_args[height]}"
+
   # "option" accepts up to 5 arguments, so the values are stored in an array
   # named `parsed_args__option`.
   for option in "${parsed_args__option[@]}"; do
@@ -103,6 +106,5 @@ fi
 
 - implement print_usage / print_help
 - test against zsh
-- Implement min/max for int, uint, float
 - Implement "keyvalue" type which makes args\_\_<argname> an associative array
 - Improve docs

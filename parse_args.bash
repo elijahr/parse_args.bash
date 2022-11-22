@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
 
 _pa_original_bashopts=$(set +o)
+if shopt extglob >/dev/null 2>&1; then
+  _pa_original_extglob=on
+else
+  _pa_original_extglob=off
+fi
+
 set -ueo pipefail
+shopt -s extglob
 
 declare -A args=()
 declare -A argdef_errors=()
@@ -24,7 +31,7 @@ _pa_validate_value() {
   value="$2"
   case $type in
     string) return 0 ;;
-    switch) [ -z "$value" ] && return 0 ;;
+    switch) [ "$value" = "on" ] && return 0 ;;
     int) [[ $value =~ ^-?[0-9]+$ ]] && return 0 ;;
     uint) [[ $value =~ ^[0-9]+$ ]] && return 0 ;;
     float) [[ $value =~ ^-?[0-9]+(\.[0-9]+)?$ ]] && return 0 ;;
@@ -39,7 +46,7 @@ _pa_validate_value() {
 
 # Parse argdefs from the input args
 _pa_parse_argdefs() {
-  local argdef parts short long name type num min_args max_args pos
+  local argdef parts i part short long name type num min_args max_args pos
   while [[ $# -gt 0 ]]; do
     argdef=$1
     shift
@@ -49,6 +56,14 @@ _pa_parse_argdefs() {
     fi
     declare -a parts=()
     IFS=':' read -ra parts <<<"$argdef"
+
+    # trim trailing/leading whitespace using extglob
+    for i in "${!parts[@]}"; do
+      part=${parts[$i]}
+      part=${part##+([[:space:]])}
+      part=${part%%+([[:space:]])}
+      parts[i]=$part
+    done
 
     if [ ${#parts[@]} -eq 0 ]; then
       # shellcheck disable=SC2034
@@ -66,9 +81,9 @@ _pa_parse_argdefs() {
       long="${BASH_REMATCH[1]}"
       name="${long}"
       pos=""
-    elif [[ ${parts[0]} =~ ^-([a-zA-Z0-9])\|--([a-zA-Z0-9_][-a-zA-Z0-9_]{0,})$ ]]; then
+    elif [[ ${parts[0]} =~ ^-([a-zA-Z0-9])([ ]+)?\|([ ]+)?--([a-zA-Z0-9_][-a-zA-Z0-9_]{0,})$ ]]; then
       short="${BASH_REMATCH[1]}"
-      long="${BASH_REMATCH[2]}"
+      long="${BASH_REMATCH[4]}"
       long_by_short[$short]=$long
       name="${long}"
       pos=""
@@ -99,6 +114,7 @@ _pa_parse_argdefs() {
       elif [[ $part =~ ^num\((.*)\)$ ]]; then
         num="${BASH_REMATCH[1]}"
         if [ "$num" = "optional" ]; then
+          min_args=0
           max_args=1
         elif [ "$num" = "required" ]; then
           min_args=1
@@ -117,7 +133,7 @@ _pa_parse_argdefs() {
         else
           # shellcheck disable=SC2034
           argdef_errors[$argdef]="Invalid value: ${num}"
-          return 2
+          continue
         fi
       fi
     done
@@ -137,26 +153,16 @@ _pa_parse_argdefs() {
       continue
     fi
 
-    if [ -z "$max_args" ]; then
-      max_args="1"
-    elif [ "$max_args" != "unlimited" ]; then
-      if [[ $max_args =~ (^[0-9]+$) ]]; then
-        if [ ! "$max_args" -gt 0 ]; then
-          # shellcheck disable=SC2034
-          argdef_errors[$argdef]="Invalid max-args value ${max_args}; must be greater than 0"
-          continue
-        fi
-      else
+    if [ "$max_args" != "unlimited" ] && [[ $max_args =~ (^[0-9]+$) ]]; then
+      if [ "$max_args" -le 0 ]; then
         # shellcheck disable=SC2034
-        argdef_errors[$argdef]="Invalid max-args value ${BASH_REMATCH[1]@Q}; not an integer or 'unlimited'"
+        argdef_errors[$argdef]="Invalid max-args value ${max_args}; must be greater than 0"
+        continue
+      elif [ "$min_args" -gt "$max_args" ]; then
+        # shellcheck disable=SC2034
+        argdef_errors[$argdef]="Invalid min-args value ${min_args}; must be less than or equal to max-args value ${max_args}"
         continue
       fi
-    fi
-
-    if [ "$max_args" != "unlimited" ] && [ "$min_args" -gt "$max_args" ]; then
-      # shellcheck disable=SC2034
-      argdef_errors[$argdef]="Invalid min-args value ${min_args}; must be less than or equal to max-args value ${max_args}"
-      continue
     fi
 
     type_by_name[$name]=$type
@@ -236,7 +242,7 @@ _pa_parse_args() {
         value=${BASH_REMATCH[1]}
       elif [ "$type" = "switch" ]; then
         # `--arg` or `-a`
-        value=""
+        value="on"
       else
         # `--arg value` or `-a value`
         shift
@@ -318,7 +324,12 @@ _pa_parse_args() {
 
 _pa_cleanup() {
   eval "${_pa_original_bashopts}"
-  unset _pa_original_bashopts long_by_short min_args_by_name \
+  if [ "$_pa_original_extglob" = "on" ]; then
+    shopt -s extglob
+  else
+    shopt -u extglob
+  fi
+  unset _pa_original_bashopts _pa_original_extglob long_by_short min_args_by_name \
     max_args_by_name count_by_name pos_order type_by_name
   unset -f _pa_validate_value _pa_parse_argdefs _pa_parse_args _pa_cleanup
 }

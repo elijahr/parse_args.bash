@@ -34,11 +34,11 @@ _patest_new_declare=$(declare -p | _patest_declare_strip)
 if [ "$_patest_new_declare" != "$_patest_original_declare" ]; then
   echo "declare -p changed"
   diff -u <(echo "$_patest_original_declare") <(echo "$_patest_new_declare")
-  exit 1
+  exit 2
 fi
 if [ "$_patest_new_set" != "$_patest_original_set" ]; then
   echo "set changed"
   diff -u <(echo "$_patest_original_set") <(echo "$_patest_new_set")
-  exit 2
+  exit 3
 fi
 echo success
